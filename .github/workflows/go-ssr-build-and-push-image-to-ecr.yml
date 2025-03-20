@@ -1,0 +1,45 @@
+---
+name: go-ssr build and push image to ECR
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "dockerfiles/Dockerfile.go-ssr"
+
+jobs:
+  build-and-push-image-to-ecr:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Generate tag
+      run: |
+        echo "TAG=$(date +"%Y%m%d")" >> $GITHUB_ENV
+        echo "Generated TAG: $TAG"
+
+    - name: Build image
+      run: |
+        docker build -t ip812/go-ssr:${{ env.TAG }} .
+
+    - name: Login to ECR
+      uses: jwalton/gh-ecr-login@v3
+      with:
+        region: ${{ secrets.AWS_REGION }}
+        access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+    - name: Tag and Push to ECR
+      run: |
+        set -e
+
+        echo "Tagging image..."
+        docker tag ip812/go-ssr:${{ env.TAG }} 678468774710.dkr.ecr.eu-central-1.amazonaws.com/ip812/go-ssr:${{ env.TAG }}
+
+        echo "Pushing image to ECR..."
+        docker push 678468774710.dkr.ecr.eu-central-1.amazonaws.com/ip812/go-ssr:${{ env.TAG }}
