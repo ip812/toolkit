@@ -25,7 +25,7 @@ jobs:
 
     - name: Build image
       run: |
-        docker build -t ip812/go-ssr:${{ env.TAG }} .
+        docker build -f dockerfiles/Dockerfile.go-ssr -t ip812/go-ssr:${{ env.TAG }} .
 
     - name: Login to ECR
       uses: jwalton/gh-ecr-login@v3
