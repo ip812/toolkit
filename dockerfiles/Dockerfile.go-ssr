@@ -1,3 +1,4 @@
+# This base image is used to build a go apps using sqlc, htmx, a-h templ and alpine.js
 FROM golang:1.24.1 AS build-stage
 RUN go install github.com/sqlc-dev/sqlc/cmd/sqlc@v1.27.0
 RUN go install github.com/a-h/templ/cmd/templ@v0.3.833
